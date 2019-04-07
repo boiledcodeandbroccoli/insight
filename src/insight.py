@@ -1,5 +1,29 @@
 #!/usr/local/bin/python3
 import csv
+import sys
+import os
+
+# Get file locations from user arguments
+try:
+    prodfile = sys.argv[1]
+    orderfile = sys.argv[2]
+    repfile = sys.argv[3]
+except:
+    print("Please run insight.py <products file> <order file> <reports file>")
+    sys.exit(1)
+
+
+# Test to make sure that provided input files exist
+pf = os.path.isfile(prodfile)
+of = os.path.isfile(orderfile)
+
+if not pf:
+    print("Products file does not exist")
+    sys.exit(1)
+if not of:
+    print("Orders file does not exist")
+    sys.exit(1)
+
 
 # Initialize "global" variables
 lines = 0
@@ -7,7 +31,7 @@ lookups = {}
 output = {}
 
 # Open & read products csvs
-with open('../input/products.csv') as file:
+with open(prodfile) as file:
     reader = csv.DictReader(file)
     for row in reader:
 
@@ -19,7 +43,7 @@ with open('../input/products.csv') as file:
             output[int(row['department_id'])] = {'orders':0,'firsts':0}
 
 # Opens and reads all orders
-with open('../input/order_products.csv') as file:
+with open(orderfile) as file:
     reader = csv.DictReader(file)
     for row in reader:
         # Tracks processing position
@@ -47,7 +71,7 @@ with open('../input/order_products.csv') as file:
             print("Error proccessing line #{}, data: {}".format(lines,row))
 
 # opens an output file with headers
-fob = open('../output/report.csv', 'w')
+fob = open(repfile, 'w')
 fob.write("department_id,number_of_orders,number_of_first_orders,percentage\n")
 
 # iterates through results in ascending order
